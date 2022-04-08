@@ -1,4 +1,4 @@
-name: Run tests
+name: Run WebDriverIO tests
 
 # Run this workflow when we dev or main changes
 # because of a push or is about the be changed
@@ -11,8 +11,8 @@ on:
 
 jobs:
   
-  ### Run api-tests with newman
-  api-and-unit-tests:
+  ### Run WebDriverIO tests
+  webdriver-io-tests:
 
     runs-on: ubuntu-latest # on an ubuntu server
     strategy:
@@ -20,9 +20,9 @@ jobs:
         node-version: [14.x] # with Node.js 14.x
   
     steps:
-      # install node
-    - uses: actions/checkout@v2 
       # checkout repo
+    - uses: actions/checkout@v2 
+      # install node
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -35,10 +35,9 @@ jobs:
       # install pm2
     - run: npm install -g pm2
       # run our Node.js based server/backend/REST-api using pm2
-    - run: pm2 start index.js
-      # install Newman
-    - run: npm install -g newman
-      # run our test collection using Newman
-    - run: newman run test-rest-api/test.postman_collection.json
-      # run jest unit tests
-    - run: npm test
+    - run: pm2 start backend.js
+      # Install Chrome
+    - run: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - run: sudo apt install ./google-chrome-stable_current_amd64.deb
+      # Run the WebDriverIO tests
+    - run: HEADLESS_CHROME=yes npm run wdio
